@@ -2,6 +2,20 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include "config.h"
+
+#ifdef USE_WINDOWS_H
+#include <windows.h>
+int _sleep (float ms) {
+	Sleep(ms);
+}
+#endif
+#ifdef USE_UNISTD_H
+#include <unistd.h>
+int _sleep (float ms) {
+	sleep(ms/10);
+}
+#endif
 
 #define min(a,b) (a<b?a:b)
 #define cell_max 1048
@@ -21,7 +35,18 @@ int main (void) {
 	int curr = 0; // current position on stack
 	bool ignore = false;
 
-	if (cells == NULL) exit(1); // exit if malloc error
+	char output[buf_size]; // output stuff
+	
+	int sleeptime = 0;
+
+	memset(output, 0, buf_size);
+
+	int pos = 0;
+
+	if (cells == NULL) { 
+		printf("malloc error, exiting...\n");
+		exit(1);
+	} // exit if malloc error
 	
 	memset(cells, 0, cell_max); // zero out all cells
 
@@ -91,20 +116,35 @@ int main (void) {
 					}
 				break;
 				case '.':
-					putchar(cells[cptr]);
+					if (pos < buf_size) {
+						output[pos] = cells[cptr];
+						pos += 1;
+					} else {
+						printf("output limit reached, exiting...\n");
+						exit(1);
+					}
+				break;
+				case '$':
+					memset(output, 0, buf_size);
+					pos = 0;
+				break;
+				case '#':
+					sleeptime = cells[cptr];
 				break;
 			}
 			}
 
-			//printf("\nread: %c, current cell's value: %d on position: %d, state = %d\n", 
-			//		*pc, (unsigned int)cells[cptr], cptr, state);
-			
-			// print stuff
-			printf("\ncells: ");
-			for (int i = min(0,cptr-2); i < min(cptr+3,cell_max); i++)
-				printf("%d ",cells[i]);
+			printf("                '     pos=%d\n",cptr);
+			printf("cells: ");
+			for (int i = cptr-2; i < min(cptr+3,cell_max); i++) {
+				if (i < 0) printf("NUL ");
+				else printf("%03d ",cells[i]);
+			}
 
 			putchar('\n');
+			printf("output: %s\n", output);
+			
+			_sleep(sleeptime);
 
 			pc++;
 		}

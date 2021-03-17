@@ -1,0 +1,2 @@
+#cmakedefine USE_WINDOWS_H
+#cmakedefine USE_UNISTD_H
