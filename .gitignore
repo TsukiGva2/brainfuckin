@@ -3,3 +3,4 @@ Makefile
 CMakeCache.txt
 CMakeFiles/
 Brainfuckin
+config.h
