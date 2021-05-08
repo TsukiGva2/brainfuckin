@@ -25,7 +25,7 @@ int _sleep (float ms) {
 #define eval 1
 
 int main (void) {
-	unsigned char *cells = (char*)malloc(cell_max);
+	unsigned char *cells = (unsigned char*)malloc(cell_max);
 	int cptr = 0; // memory pointer
 	char buf[buf_size]; // input buffer
     
